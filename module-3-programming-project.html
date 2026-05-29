@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CMPS 260: Module 3 Programming Project</title>
+<style>* { font-family: monospace; }</style>
+<script>
+
+// NOTE: You must implement the data structures using the prototype approach.
+//       This is not what the book uses, so you have to convert it.
+//       See also: https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+
+// NOTE: Please review the following links regularly:
+//       https://it.pointpark.edu/tutorials/arrays-vs-objects/
+//       https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+//       https://it.pointpark.edu/tutorials/implementation-vs-interface/
+
+
+
+//---------//
+// Project //
+//---------//
+console.log("Project");
+
+// 1. Implement the linked list data structure using the prototype.
+
+function LinkedList() {
+  function LinkedList() {
+  this.head = null;
+  this.length = 0;
+}
+
+// Node helper
+function Node(element) {
+  this.element = element;
+  this.next = null;
+}
+}
+
+// add the prototype methods
+LinkedList.prototype.append = function(element) {
+  var node = new Node(element);
+
+  if (this.head === null) {
+    this.head = node;
+  } else {
+    var current = this.head;
+
+    while (current.next !== null) {
+      current = current.next;
+    }
+
+    current.next = node;
+  }
+
+  this.length++;
+};
+LinkedList.prototype.print = function() {
+  var current = this.head;
+  var result = "List: ";
+
+  while (current) {
+    result += current.element + (current.next ? " -> " : "");
+    current = current.next;
+  }
+
+  console.log(result);
+};
+LinkedList.prototype.getNodeAt = function(position) {
+  if (position < 0 || position >= this.length) return null;
+
+  var current = this.head;
+  var index = 0;
+
+  while (index < position) {
+    current = current.next;
+    index++;
+  }
+
+  return current; // returns NODE (not element)
+};
+
+LinkedList.prototype.appendNode = function(node) {
+  if (this.head === null) {
+    this.head = node;
+  } else {
+    var current = this.head;
+
+    while (current.next !== null) {
+      current = current.next;
+    }
+
+    current.next = node;
+  }
+
+  this.length++;
+};
+
+// 2. Linked lists are often used for problems where a lot of information can
+//    be shared in a certain way. For example, suppose we have the following
+//    directions involving 7 different landmarks:
+//       1. A1 -> B -> C -> D -> E
+//       2. A2 -> B -> C -> D -> E
+//       3. A3 -> A4 -> C -> D -> E
+//    As you can see, all of these chains have a lot in common. They start out
+//    as three separate linked lists but converge into one that ends with
+//    C -> D -> E. We will implement this but need to make some modifications.
+
+// creating the landmarks
+function Landmark(name) {
+  this.name = name;
+  // this would normally store more information, such as location
+}
+
+var a1 = new Landmark("A1");
+var a2 = new Landmark("A2");
+var a3 = new Landmark("A3");
+var a4 = new Landmark("A4");
+var b = new Landmark("B");
+var c = new Landmark("C");
+var d = new Landmark("D");
+var e = new Landmark("E");
+
+var list1 = new LinkedList();
+var list2 = new LinkedList();
+var list3 = new LinkedList();
+
+// 1. Store the landmarks for directions (1) in list1 using append.
+list1.append(a1);
+list1.append(b);
+list1.append(c);
+list1.append(d);
+list1.append(e);
+// 2. Store the landmarks for directions (2) in list2, but only include A2 for
+//    now (so do NOT add B, C, D, and E just yet).
+list2.append(a2);
+
+var tmpNode = list1.getNodeAt(1); // B node
+list2.appendNode(tmpNode);
+
+// 3. Implement a getNodeAt(position) method (using the prototype) that returns
+//    the node in a linked list at a given position (make sure to return the
+//    node and not the element!).
+list3.append(a3);
+list3.append(a4);
+
+var tmpNode2 = list1.getNodeAt(2); // C node
+list3.appendNode(tmpNode2);
+
+list1.print();
+list2.print();
+list3.print();
+
+// 4. Implement an appendNode(node) method (using the prototype) that appends a
+//    node to a linked list (as opposed to an element!).
+// Appends an existing NODE (not a value) to the end of the list.
+
+LinkedList.prototype.appendNode = function(node) {
+
+  if (!node) return;
+
+  // CASE 1: empty list
+  if (this.head === null) {
+    this.head = node;
+  } else {
+
+    // CASE 2: traverse to last node
+    var current = this.head;
+
+    while (current.next !== null) {
+      current = current.next;
+    }
+
+    current.next = node;
+  }
+
+  this.length++;
+};
+
+// 5. Uncomment the lines below and make sure the correct directions are
+//    printed (see above).
+// Get node at position 1 (B node)
+var tmpNode = list1.getNodeAt(1);
+
+// Append that SAME node into list2
+list2.appendNode(tmpNode);
+
+// Print results
+list1.print();
+list2.print();
+
+//var tmpNode = list1.getNodeAt(1); // NOTE: this is the node containing B
+//list2.appendNode(tmpNode); // append 'node B' to 'node A2'
+//list1.print();
+//list2.print();
+
+// 6. Follow the same steps for directions (3). First add A3 and A4 to list3,
+//    then get the third node (second position) from list1, and append this
+//    node to list3.
+// Add A3 and A4 first
+list3.append(a3);
+list3.append(a4);
+
+// Get third node from list1 (C node)
+var tmpNode2 = list1.getNodeAt(2);
+
+// Attach shared node chain
+list3.appendNode(tmpNode2);
+
+// Print results
+list3.print();
+// 7. What is the problem with the size() method? How can you fix this?
+// The problem with size() in a linked list that shares nodes is that:
+// - The same node can belong to multiple lists
+// - If nodes are shared, counting nodes per list becomes inconsistent
+//
+// FIX:
+// Instead of relying on stored "length", size should be calculated by
+// traversing the list each time, OR carefully managing shared references
+// so updates don’t double-count shared nodes.
+
+
+</script>
+</head>
+<body>
+  See console!
+</body>
+</html>
