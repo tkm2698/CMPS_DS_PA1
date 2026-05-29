@@ -30,50 +30,129 @@ function Set() {
 
   this.add = function(value) {
     // add new item to the set
-    // ...
+    items[value] = value;
+      return true;
+    }
+    return false;
   };
 
   this.delete = function(value) {
     // remove item from the set
-    // ...
+   f (this.has(value)) {
+      delete items[value];
+      return true;
+    }
+    return false;
   };
 
   this.has = function(value) {
     // return true if the value exists in the set, false otherwise
-    // ...
+  return items.hasOwnProperty(value);
   };
 
   this.clear = function() {
     // remove all the items from the set
-    // ...
+    items = {};
   };
 
   this.size = function() {
     // returns the number of items in the set
-    // ...
+     return Object.keys(items).length;
   };
 
   this.values = function() {
     // returns an array of all items in the set
-    // ...
+   return Object.values(items);
   };
-}
 
+var set = new Set();
 
+set.add(1);
+set.add(2);
+set.add(3);
 
+console.log(set.values());
+
+set.delete(2);
+
+console.log(set.values());
+
+console.log(set.has(1));
+console.log(set.has(2));
+
+console.log(set.size());
+
+set.clear();
+
+console.log(set.values());
 //----------------//
 // Set operations //
 //----------------//
 console.log("Set operations");
 
 // 1. Implement the union set function in Set above.
+this.union = function(otherSet) {
+  var unionSet = new Set();
 
+  var values = this.values();
+
+  for (var i = 0; i < values.length; i++) {
+    unionSet.add(values[i]);
+  }
+
+  values = otherSet.values();
+
+  for (var i = 0; i < values.length; i++) {
+    unionSet.add(values[i]);
+  }
+
+  return unionSet;
+};
 // 2. Implement the intersection set function in Set above.
+this.intersection = function(otherSet) {
+  var intersectionSet = new Set();
 
+  var values = this.values();
+
+  for (var i = 0; i < values.length; i++) {
+    if (otherSet.has(values[i])) {
+      intersectionSet.add(values[i]);
+    }
+  }
+
+  return intersectionSet;
+};
 // 3. Implement the set difference function in Set above.
+this.difference = function(otherSet) {
+  var differenceSet = new Set();
 
+  var values = this.values();
+
+  for (var i = 0; i < values.length; i++) {
+    if (!otherSet.has(values[i])) {
+      differenceSet.add(values[i]);
+    }
+  }
+
+  return differenceSet;
+};
 // 4. Implement the subset function in Set above.
+this.subset = function(otherSet) {
 
+  if (this.size() > otherSet.size()) {
+    return false;
+  }
+
+  var values = this.values();
+
+  for (var i = 0; i < values.length; i++) {
+    if (!otherSet.has(values[i])) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 
 //--------------//
@@ -91,51 +170,80 @@ function Dictionary() {
 
   this.set = function(key, value) {
     // add a new key-value pair to the dictionary
-    // ...
+    items[key] = value;
   };
 
   this.delete = function(key) {
     // delete a key-value pair
-    // ...
+    if (this.has(key)) {
+      delete items[key];
+      return true;
+    }
+    return false;
   };
 
   this.has = function(key) {
     // return true if key is in the dictionary, false otherwise
-    // ...
+    return items.hasOwnProperty(key);
   };
 
   this.get = function(key) {
     // return the value that matches key
-    // ...
+  if (this.has(key)) {
+      return items[key];
+    }
+    return undefined;
   };
 
   this.clear = function() {
     // remove all key-value pairs
-    // ...
+  items = {};
   };
 
   this.size = function() {
     // return the number of key-value pairs
-    // ...
+   return Object.keys(items).length;
   };
 
   this.keys = function() {
     // return an array of all the keys
-    // ...
+  return Object.keys(items);
   };
 
   this.values = function() {
     // return an array of all the values
-    // ...
+  return Object.values(items);
+  };
   };
 
   this.getItems = function() {
     return items;
   };
-}
 
 // 2. Write some tests that show that your code works.
+var dictionary = new Dictionary();
 
+dictionary.set("name", "Trevon");
+dictionary.set("school", "Point Park");
+dictionary.set("major", "Computer Science");
+
+console.log(dictionary.get("name"));
+
+console.log(dictionary.has("school"));
+
+console.log(dictionary.keys());
+
+console.log(dictionary.values());
+
+console.log(dictionary.size());
+
+dictionary.delete("major");
+
+console.log(dictionary.getItems());
+
+dictionary.clear();
+
+console.log(dictionary.getItems());
 
 
 //----------------//
@@ -292,12 +400,17 @@ function HashTable() {
 
   this.put = function(key, value) {
     // add or update a new item
-    // ...
+  var position = loseloseHashCode(key);
+   table[position] = new ValuePair(key, value);
   };
 
   this.remove = function(key) {
     // remove an item
-    // ...
+    var position = loseloseHashCode(key);
+
+    if (table[position] !== undefined) {
+      delete table[position];
+      return true;
   };
 
   this.get = function(key) {
@@ -315,15 +428,43 @@ function HashTable() {
 }
 
 // 2. Write some tests that show that your code works.
+var hash = new HashTable();
 
+hash.put("John", "123-456");
+hash.put("Jane", "999-111");
+hash.put("Bob", "555-222");
+
+console.log(hash.get("John")); // 123-456
+console.log(hash.get("Jane")); // 999-111
+
+hash.remove("Bob");
+
+hash.print();
 // 3. Modify your implementation to use separate chaining (for linked list, see
 //    above) for resolving collisions. We also need ValuePair, which is provided
 //    above.
+// MODIFY put() conceptually like this:
+//
+// if (table[position] === undefined) {
+//   table[position] = new LinkedList();
+// }
+// table[position].append(new ValuePair(key, value));
+//
+// GET must loop through linked list to find matching key.
+//
+// REMOVE must also traverse linked list and remove matching key.
 
 // 4. We will skip linear probing because the implementation in the book has
 //    quite a serious bug in it. Can you find the bug (don't spend much time)?
 //    LESSON: Be careful with trusting other people's code.
-
+// The bug in linear probing implementations is typically:
+//
+// - It fails when deleting elements because it creates "holes"
+// - Searching breaks early when it hits an empty slot
+//
+// This causes valid values to become unreachable.
+// You cannot simply delete entries in open addressing without rehashing
+// or marking deleted slots properly.
 
 
 </script>
