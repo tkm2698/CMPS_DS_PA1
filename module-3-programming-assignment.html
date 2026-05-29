@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CMPS 260: Module 3 Programming Assignment</title>
+<style>* { font-family: monospace; }</style>
+<script>
+
+// NOTE: You must implement the data structures using the no prototype approach.
+//       This is what the book uses, so you can copy it.
+//       See also: https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+
+// NOTE: Please review the following links regularly:
+//       https://it.pointpark.edu/tutorials/arrays-vs-objects/
+//       https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+//       https://it.pointpark.edu/tutorials/implementation-vs-interface/
+
+
+
+//--------------------------------//
+// The linked list data structure //
+//--------------------------------//
+console.log("The linked list data structure");
+
+// 1. Suppose you have an array with 1,000 elements and a linked list with 1,000
+//    elements. For both data structures, you want to retrieve the last entry.
+//    Does one data structure complete that operation before the other (i.e.,
+//    is it faster)? If yes, how much faster? If no, why does it take the same
+//    amount of time?
+// Yes, the array is faster.
+//
+// Array:
+// - Direct access using index (arr[arr.length - 1])
+// - Time complexity: O(1)
+//
+// Linked List:
+// - Must start at head and traverse each node until the last node
+// - Time complexity: O(n)
+//
+// For 1,000 elements:
+// - Array takes constant time (1 step)
+// - Linked list takes ~1,000 steps
+//
+// Therefore, the array is significantly faster.
+
+//------------------------//
+// Creating a linked list //
+//------------------------//
+console.log("Creating a linked list");
+
+// We are going to implement the linked list data structure described in the
+// book. Instead of using 'let' we use 'var' everywhere. Note that this
+// implementation does not use the prototype (see homework). Here is a skeleton
+// that we will work on completing:
+
+function LinkedList() {
+
+  // helper class
+  function Node(element) {
+    this.element = element;
+    this.next = null;
+  }
+
+  // store length and head
+  var length = 0;
+  var head = null;
+
+  this.append = function(element) {
+    // add a new item to the end of the list
+    // ...
+  };
+
+  this.insert = function(position, element) {
+    // insert a new item at a specific location
+    // ...
+  };
+
+  this.removeAt = function(position) {
+    // remove an element from a specific location
+    // ...
+  };
+
+  this.remove = function(element) {
+    // remove a specific element from the list
+    // ...
+  };
+
+  this.indexOf = function(element) {
+    // return the index of an element in the list
+    // ...
+  };
+
+  this.isEmpty = function() {
+    // check whether the list is empty
+    // ...
+  };
+
+  this.size = function() {
+    // return the number of elements in the list
+    // ...
+  };
+
+  this.getHead = function() {
+    // return head node
+    // ...
+  }
+
+  this.toString = function() {
+    // overwrite the default toString method
+    var current = head;
+    var string = "List: ";
+    while (current) {
+      string += current.element + (current.next ? " -> " : "");
+      current = current.next;
+    }
+    return string;
+  };
+
+  this.print = function() {
+    // print to the console
+    console.log(this.toString());
+  };
+
+}
+
+// create a linked list to operate on
+var list = new LinkedList();
+
+// 1. Write pseudo code (meaning; use comments) to describe how you would
+//    implement the append method. HINT: What two scenarios can you distinguish?
+// PSEUDO CODE:
+// 1. Create a new node
+// 2. If head is null, set head to new node
+// 3. Otherwise, traverse to the last node
+// 4. Set last node's next pointer to new node
+// 5. Increase length
+
+// 2. Translate your pseudo code into actual code and test it.
+//    HINT: Use list.print() to test your code.
+this.append = function(element) {
+  var node = new Node(element);
+
+  if (head === null) {
+    head = node;
+  } else {
+    var current = head;
+
+    while (current.next !== null) {
+      current = current.next;
+    }
+
+    current.next = node;
+  }
+
+  length++;
+};
+
+
+// 3. Repeat (1) and (2) for insert.
+this.insert = function(position, element) {
+  if (position < 0 || position > length) return false;
+
+  var node = new Node(element);
+  var current = head;
+  var previous;
+  var index = 0;
+
+  if (position === 0) {
+    node.next = head;
+    head = node;
+  } else {
+    while (index++ < position) {
+      previous = current;
+      current = current.next;
+    }
+
+    node.next = current;
+    previous.next = node;
+  }
+
+  length++;
+  return true;
+};
+// 1. Check if position is valid
+// 2. Create new node
+// 3. If position is 0, insert at head
+// 4. Otherwise traverse to position
+// 5. Reconnect pointers
+// 6. Increase length
+
+// 4. Repeat (1) and (2) for removeAt.
+// 1. Check if position is valid
+// 2. If position is 0, move head
+// 3. Otherwise traverse list
+// 4. Skip over node
+// 5. Decrease length
+this.removeAt = function(position) {
+  if (position < 0 || position >= length) return null;
+
+  var current = head;
+  var previous;
+  var index = 0;
+
+  if (position === 0) {
+    head = current.next;
+  } else {
+    while (index++ < position) {
+      previous = current;
+      current = current.next;
+    }
+
+    previous.next = current.next;
+  }
+
+  length--;
+  return current.element;
+};
+
+
+// 5. Repeat (1) and (2) for remove.
+// 1. Find index of element
+// 2. Use removeAt to delete it
+this.remove = function(element) {
+  var index = this.indexOf(element);
+  return this.removeAt(index);
+};
+
+
+// 6. Repeat (1) and (2) for indexOf.
+// 1. Start at head
+// 2. Traverse list
+// 3. Compare each element
+// 4. Return index if found
+// 5. Return -1 if not found
+
+this.indexOf = function(element) {
+  var current = head;
+  var index = 0;
+
+  while (current) {
+    if (current.element === element) return index;
+
+    current = current.next;
+    index++;
+  }
+
+  return -1;
+};
+
+
+// 7. Repeat (1) and (2) for isEmpty.
+// Returns true if list has no elements
+
+this.isEmpty = function() {
+  return length === 0;
+};
+
+
+// 8. Repeat (1) and (2) for size.
+// Returns number of elements in list
+
+this.size = function() {
+  return length;
+};
+
+
+// 9. Repeat (1) and (2) for getHead.
+// Returns the first node in the list
+
+this.getHead = function() {
+  return head;
+};
+
+
+</script>
+</head>
+<body>
+  See console!
+</body>
+</html>
