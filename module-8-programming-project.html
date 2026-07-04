@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CMPS 260: Module 8 Programming Project</title>
+<style>* { font-family: monospace; }</style>
+<script>
+
+// NOTE: You must implement the data structures using the prototype approach.
+//       This is not what the book uses, so you have to convert it.
+//       See also: https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+
+// NOTE: Please review the following links regularly:
+//       https://it.pointpark.edu/tutorials/arrays-vs-objects/
+//       https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+//       https://it.pointpark.edu/tutorials/implementation-vs-interface/
+
+
+
+//---------//
+// Project //
+//---------//
+console.log("Project");
+
+// 1. What is the worst case complexity of the following function?
+
+function hasDuplicates(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    for (var j = 0; j < arr.length; j++) {
+      if (i !== j && arr[i] === arr[j]) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+//Worst-case time complexity: O(n²)
+//Reason: nested iteration over the same array
+// 2. Implement a faster version of the same function and analyze the
+//    complexity of this approach.
+
+function hasDuplicatesFast(arr) {
+  // todo
+}
+
+
+function hasDuplicatesFast(arr) {
+  var seen = new Set();
+
+  for (var i = 0; i < arr.length; i++) {
+    if (seen.has(arr[i])) {
+      return true;
+    }
+    seen.add(arr[i]);
+  }
+
+  return false;
+}
+// 3. The travelling salesman problem is a another classic problem and we are
+//    going to solve it using a greedy algorithm. Before starting, please read
+//    through the article on Wikipedia:
+//      https://en.wikipedia.org/wiki/Travelling_salesman_problem
+//    Then implement the following:
+//    (a) Create a graph that represents the example symmetric TSP problem on
+//        the Wikipedia page.
+
+var graph = {
+  A: { A: 0, B: 10, C: 15, D: 20 },
+  B: { A: 10, B: 0, C: 35, D: 25 },
+  C: { A: 15, B: 35, C: 0, D: 30 },
+  D: { A: 20, B: 25, C: 30, D: 0 }
+};
+
+//    (b) Implement a greedy search that finds the shortest path. You should
+//        have the following steps: (1) pick node A as the starting position,
+//        (2) pick the closest neighbor that has not been visited as the next
+//        city to visit, (3) continue this process until returning to A,
+//        (4) print the final length of the path and also the sequence of
+//        the cities.
+function greedyTSP(graph, start) {
+  var visited = {};
+  var path = [start];
+  var totalDistance = 0;
+
+  var current = start;
+  visited[current] = true;
+
+  while (path.length < Object.keys(graph).length) {
+    var nextCity = null;
+    var minDistance = Infinity;
+
+    for (var city in graph[current]) {
+      if (!visited[city] && graph[current][city] < minDistance) {
+        minDistance = graph[current][city];
+        nextCity = city;
+      }
+    }
+
+    visited[nextCity] = true;
+    path.push(nextCity);
+    totalDistance += minDistance;
+    current = nextCity;
+  }
+
+  // return to start
+  totalDistance += graph[current][start];
+  path.push(start);
+
+  console.log("Path:", path.join(" -> "));
+  console.log("Total distance:", totalDistance);
+
+  return totalDistance;
+}
+
+//    (c) Check your results, do they make sense? Is is the optimal solution?
+//It makes sense because it always picks the closest unvisited city
+//It is NOT guaranteed to be optimal
+//Greedy TSP can get stuck in a locally good path that is not globally best
+
+
+// 4. Solve https://csacademy.com/contest/interview-archive/task/intersecting-rectangles/
+//    What is the runtime complexity of your solution?
+//O(n²) because each rectangle is compared with all others using a nested loop.
+//    HINT: Try to break down the problems into smaller steps. For example,
+//          find a convenient way to represent rectangles and define a function
+//          that tests whether one rectangle is inside another. Then test your
+//          code on just two rectangles first to make sure it works.
+
+
+
+</script>
+</head>
+<body>
+  See console!
+</body>
+</html>
