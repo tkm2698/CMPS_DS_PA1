@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CMPS 260: Module 4 Programming Project</title>
+<style>* { font-family: monospace; }</style>
+<script>
+
+// NOTE: You must implement the data structures using the prototype approach.
+//       This is not what the book uses, so you have to convert it.
+//       See also: https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+
+// NOTE: Please review the following links regularly:
+//       https://it.pointpark.edu/tutorials/arrays-vs-objects/
+//       https://it.pointpark.edu/tutorials/no-prototype-vs-prototype/
+//       https://it.pointpark.edu/tutorials/implementation-vs-interface/
+
+
+
+//---------//
+// Project //
+//---------//
+console.log("Project");
+
+// 1. Implement the set data structure using the prototype.
+
+// A professor keeps attendence of classes with the following results:
+// All students: Mary, Joe, Tim, Rosalee, Vincent, Caroline
+// Class 1: Rosalee, Joe, Mary, Tim
+// Class 2: Mary, Tim, Vincent, Rosalee, Caroline
+// Class 3: Caroline, Tim, Vincent, Rosalee, Joe
+function Set() {
+  this.items = {};
+}
+
+Set.prototype.add = function(value) {
+  if (!this.has(value)) {
+    this.items[value] = value;
+    return true;
+  }
+  return false;
+};
+
+Set.prototype.delete = function(value) {
+  if (this.has(value)) {
+    delete this.items[value];
+    return true;
+  }
+  return false;
+};
+
+Set.prototype.has = function(value) {
+  return this.items.hasOwnProperty(value);
+};
+
+Set.prototype.clear = function() {
+  this.items = {};
+};
+
+Set.prototype.size = function() {
+  return Object.keys(this.items).length;
+};
+
+Set.prototype.values = function() {
+  return Object.values(this.items);
+};
+// 2. Create a set of students for each class.
+var class1 = new Set();
+class1.add("Rosalee");
+class1.add("Joe");
+class1.add("Mary");
+class1.add("Tim");
+
+var class2 = new Set();
+class2.add("Mary");
+class2.add("Tim");
+class2.add("Vincent");
+class2.add("Rosalee");
+class2.add("Caroline");
+
+var class3 = new Set();
+class3.add("Caroline");
+class3.add("Tim");
+class3.add("Vincent");
+class3.add("Rosalee");
+class3.add("Joe");
+// 3. Use set operations to get a list of students that attended at least
+//    one class.
+var allStudents = class1.union(class2).union(class3);
+
+console.log(allStudents.values());
+// 4. Use set operations to get a list of students that attended all classes.
+var attendedAll = class1.intersection(class2).intersection(class3);
+
+console.log(attendedAll.values());
+// 5. Show that the results for (2) and (3) are a subset of all students.
+var allClassStudents = new Set();
+
+allClassStudents.add("Mary");
+allClassStudents.add("Joe");
+allClassStudents.add("Tim");
+allClassStudents.add("Rosalee");
+allClassStudents.add("Vincent");
+allClassStudents.add("Caroline");
+
+console.log(allStudents.subset(allClassStudents));
+console.log(attendedAll.subset(allClassStudents));
+// 6. Implement the dictionary data structure using the prototype.
+
+function Dictionary() {
+ this.items = {};
+}
+
+Dictionary.prototype.set = function(key, value) {
+  this.items[key] = value;
+};
+
+Dictionary.prototype.delete = function(key) {
+  if (this.has(key)) {
+    delete this.items[key];
+    return true;
+  }
+  return false;
+};
+
+Dictionary.prototype.has = function(key) {
+  return this.items.hasOwnProperty(key);
+};
+
+Dictionary.prototype.get = function(key) {
+  if (this.has(key)) {
+    return this.items[key];
+  }
+  return undefined;
+};
+
+Dictionary.prototype.clear = function() {
+  this.items = {};
+};
+
+Dictionary.prototype.size = function() {
+  return Object.keys(this.items).length;
+};
+
+Dictionary.prototype.keys = function() {
+  return Object.keys(this.items);
+};
+
+Dictionary.prototype.values = function() {
+  return Object.values(this.items);
+};
+
+Dictionary.prototype.getItems = function() {
+  return this.items;
+}
+
+// 7. Complete the method below that adds all key-value pairs from one
+//    dictionary into another. See also the example below.
+
+Dictionary.prototype.merge = function(dict) {
+var keys = dict.keys();
+
+  for (var i = 0; i < keys.length; i++) {
+    this.set(keys[i], dict.get(keys[i]));
+  }
+};
+
+// Test your code by uncommenting these lines:
+var dict1 = new Dictionary();
+dict1.set("key1", "val1");
+dict1.set("key2", "val2");
+dict1.set("key3", "val3");
+
+var dict2 = new Dictionary();
+dict2.set("key3", "val3b");
+dict2.set("key4", "val4");
+
+dict1.merge(dict2);
+dict1.print();
+
+// 8. Implement the hashtable data structure using the prototype.
+function HashTable(size = 53) {
+  this.buckets = new Array(size);
+  this.size = size;
+}
+
+HashTable.prototype._hash = function(key) {
+  var total = 0;
+  var PRIME = 31;
+
+  for (var i = 0; i < key.length; i++) {
+    total = (total * PRIME + key.charCodeAt(i)) % this.size;
+  }
+
+  return total;
+};
+
+HashTable.prototype.set = function(key, value) {
+  var index = this._hash(key);
+
+  if (!this.buckets[index]) {
+    this.buckets[index] = [];
+  }
+
+  for (var i = 0; i < this.buckets[index].length; i++) {
+    if (this.buckets[index][i][0] === key) {
+      this.buckets[index][i][1] = value;
+      return;
+    }
+  }
+
+  this.buckets[index].push([key, value]);
+};
+
+HashTable.prototype.get = function(key) {
+  var index = this._hash(key);
+
+  var bucket = this.buckets[index];
+  if (!bucket) return undefined;
+
+  for (var i = 0; i < bucket.length; i++) {
+    if (bucket[i][0] === key) {
+      return bucket[i][1];
+    }
+  }
+
+  return undefined;
+};
+
+HashTable.prototype.remove = function(key) {
+  var index = this._hash(key);
+
+  var bucket = this.buckets[index];
+  if (!bucket) return false;
+
+  for (var i = 0; i < bucket.length; i++) {
+    if (bucket[i][0] === key) {
+      bucket.splice(i, 1);
+      return true;
+    }
+  }
+
+  return false;
+};
+
+HashTable.prototype.has = function(key) {
+  return this.get(key) !== undefined;
+};
+
+HashTable.prototype.print = function() {
+  console.log(this.buckets);
+};
+
+
+
+</script>
+</head>
+<body>
+  See console!
+</body>
+</html>
